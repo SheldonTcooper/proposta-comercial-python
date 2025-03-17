@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Proposta Comercial</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    
+    <script>
+        // Formatação automática do telefone
+        function formatPhone(e) {
+            let value = e.target.value.replace(/\D/g, ""); // Remove tudo que não for número
+            if (value.length >= 11) {
+                e.target.value = value.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+            } else if (value.length >= 10) {
+                e.target.value = value.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3");
+            }
+        }
+
+        // Formatação automática do valor (R$)
+        function formatCurrency(e) {
+            let value = e.target.value.replace(/\D/g, ""); // Remove tudo que não for número
+            value = (parseFloat(value) / 100).toFixed(2); // Converte para decimal
+            e.target.value = value ? `R$ ${value}` : "";
+        }
+
+        // Formatação automática da porcentagem (%)
+        function formatPercentage(e) {
+            let value = e.target.value.replace(/\D/g, ""); // Remove tudo que não for número
+            e.target.value = value ? `${value}%` : "";
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Cadastro de Proposta Comercial</h2>
+        <form action="/cadastrar" method="post" enctype="multipart/form-data">
+            <label>Consultor:</label>
+            <input type="text" name="consultor" required>
+
+            <label>Telefone:</label>
+            <input type="text" name="telefone" oninput="formatPhone(event)" maxlength="15" required>
+
+            <label>E-mail:</label>
+            <input type="email" name="email" required>
+
+            <label>Nome do Cliente:</label>
+            <input type="text" name="cliente" required>
+
+            <label>Telefone do Cliente:</label>
+            <input type="text" name="telefone_cliente" oninput="formatPhone(event)" maxlength="15" required>
+
+            <label>E-mail do Cliente:</label>
+            <input type="email" name="email_cliente" required>
+
+            <label>Descrição da Negociação:</label>
+            <textarea name="descricao" required></textarea>
+
+            <label>Valor:</label>
+            <input type="text" name="valor" oninput="formatCurrency(event)" required>
+
+            <label>Taxa:</label>
+            <input type="text" name="taxa" oninput="formatPercentage(event)" required>
+
+            <label>Foto do Consultor:</label>
+            <input type="file" name="foto_consultor" accept="image/*" required>
+
+            <button type="submit">Gerar Proposta</button>
+        </form>
+    </div>
+</body>
+</html>

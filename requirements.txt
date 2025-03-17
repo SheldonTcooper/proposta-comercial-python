@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposta Comercial</title>
+</head>
+<body>
+    <h1>Bem-vindo ao Sistema de Propostas Comerciais</h1>
+    <p>Este é o início do nosso sistema em Python com Flask!</p>
+</body>
+</html>
