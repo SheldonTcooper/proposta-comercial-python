@@ -76,7 +76,18 @@ def cadastrar():
         pdf.cell(200, 10, f"Telefone: {telefone} | E-mail: {email}", ln=True)
         pdf.cell(200, 10, f"Cliente: {cliente}", ln=True)
         pdf.cell(200, 10, f"Telefone do Cliente: {telefone_cliente} | E-mail: {email_cliente}", ln=True)
-        pdf.cell(200, 10, f"Descrição: {descricao}", ln=True)
+
+        # Adicionar descrição dentro de uma caixa delimitada
+        pdf.ln(5)
+        pdf.set_font("Arial", "B", 12)
+        pdf.cell(200, 10, "Descrição da Negociação:", ln=True)
+
+        pdf.set_font("Arial", size=11)
+        pdf.set_fill_color(230, 230, 230)  # Define uma cor de fundo para destacar a caixa
+        pdf.multi_cell(190, 8, descricao, border=1, fill=True)  # Caixa com bordas e fundo
+
+        # Adicionar informações financeiras
+        pdf.ln(5)
         pdf.cell(200, 10, f"Valor: R$ {valor} | Taxa: {taxa}%", ln=True)
 
         # Adicionar a foto do consultor no rodapé esquerdo
