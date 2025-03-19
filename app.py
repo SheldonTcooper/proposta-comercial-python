@@ -19,6 +19,17 @@ FOTO_PADRAO = os.path.join(app.config['UPLOAD_FOLDER'], "foto_padrao.jpg")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PDF_FOLDER, exist_ok=True)
 
+# Texto fixo que deve aparecer no PDF
+TEXTO_FIXO = """Em atenção à sua solicitação, temos o prazer de apresentar a presente proposta da CONTA ESCROW
+TESOURARIA©VINCULADA, uma conta bancária de sua titularidade operada em instituição financeira parceira, do tipo escrow 
+account, com diversas funções interessantes e exclusivas da TAURI SECURITIZADORA, sendo a principal delas, camadas de 
+proteção tecnológica, operacional e legal que tornam a sua disponibilidade de caixa e os valores que antecipamos para 
+sua empresa, mais seguros contra eventuais penhoras de terceiros. 
+
+Apesar de ser complexa em termos da mecânica de blindagem e alavancagem de crédito aplicadas nela, a operação em si da 
+conta escrow é extremamente SIMPLES de entender e FÁCIL de usar.
+"""
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -89,6 +100,14 @@ def cadastrar():
         # Adicionar informações financeiras
         pdf.ln(5)
         pdf.cell(200, 10, f"Valor: R$ {valor} | Taxa: {taxa}%", ln=True)
+
+        # Adicionar o TEXTO FIXO no PDF
+        pdf.ln(10)
+        pdf.set_font("Arial", "B", 12)
+        pdf.cell(200, 10, "Informações Importantes:", ln=True)
+
+        pdf.set_font("Arial", size=11)
+        pdf.multi_cell(190, 8, TEXTO_FIXO, border=1)  # O texto fixo agora está dentro de uma caixa no PDF
 
         # Adicionar a foto do consultor no rodapé esquerdo
         if foto_path and os.path.exists(foto_path):
