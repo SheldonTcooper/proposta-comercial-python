@@ -20,11 +20,13 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PDF_FOLDER, exist_ok=True)
 
 # Texto fixo que deve aparecer no PDF
-TEXTO_FIXO = """Em atenção à sua solicitação, temos o prazer de apresentar a presente proposta da CONTA ESCROW
+TEXTO_FIXO = """\
+Em atenção à sua solicitação, temos o prazer de apresentar a presente proposta da CONTA ESCROW
 TESOURARIA©VINCULADA, uma conta bancária de sua titularidade operada em instituição financeira parceira, do tipo escrow 
-account, com diversas funções interessantes e exclusivas da TAURI SECURITIZADORA, sendo a principal delas, camadas de 
-proteção tecnológica, operacional e legal que tornam a sua disponibilidade de caixa e os valores que antecipamos para 
-sua empresa, mais seguros contra eventuais penhoras de terceiros. 
+account, com diversas funções interessantes e exclusivas da TAURI SECURITIZADORA.
+
+A principal delas são camadas de proteção tecnológica, operacional e legal que tornam a sua disponibilidade de caixa e os valores que 
+antecipamos para sua empresa mais seguros contra eventuais penhoras de terceiros.
 
 Apesar de ser complexa em termos da mecânica de blindagem e alavancagem de crédito aplicadas nela, a operação em si da 
 conta escrow é extremamente SIMPLES de entender e FÁCIL de usar.
@@ -70,14 +72,14 @@ def cadastrar():
         pdf.set_auto_page_break(auto=True, margin=15)
         pdf.add_page()
 
-        # Adicionar a logo maior e destacada no cabeçalho
+        # Adicionar a logo no cabeçalho
         logo_path = "static/logo.png"
         if os.path.exists(logo_path):
             pdf.image(logo_path, x=50, y=10, w=100)  # Ajustado para centralizar e aumentar o tamanho
 
         # Adicionar título destacado
         pdf.set_font("Arial", "B", 18)
-        pdf.ln(35)  # Ajusta o espaçamento
+        pdf.ln(40)  # Ajusta o espaçamento
         pdf.cell(200, 10, "Proposta Comercial de Conta Vinculada", ln=True, align='C')
 
         # Informações principais
@@ -88,20 +90,20 @@ def cadastrar():
         pdf.cell(200, 10, f"Cliente: {cliente}", ln=True)
         pdf.cell(200, 10, f"Telefone do Cliente: {telefone_cliente} | E-mail: {email_cliente}", ln=True)
 
-        # Adicionar descrição dentro de uma caixa delimitada
-        pdf.ln(5)
+        # Adicionar espaçamento antes da descrição
+        pdf.ln(8)
         pdf.set_font("Arial", "B", 12)
         pdf.cell(200, 10, "Descrição da Negociação:", ln=True)
 
         pdf.set_font("Arial", size=11)
-        pdf.set_fill_color(230, 230, 230)  # Define uma cor de fundo para destacar a caixa
+        pdf.set_fill_color(230, 230, 230)  # Define um fundo cinza claro
         pdf.multi_cell(190, 8, descricao, border=1, fill=True)  # Caixa com bordas e fundo
 
         # Adicionar informações financeiras
         pdf.ln(5)
         pdf.cell(200, 10, f"Valor: R$ {valor} | Taxa: {taxa}%", ln=True)
 
-        # Adicionar o TEXTO FIXO no PDF
+        # Adicionar o TEXTO FIXO no PDF com espaçamento ajustado
         pdf.ln(10)
         pdf.set_font("Arial", "B", 12)
         pdf.cell(200, 10, "Informações Importantes:", ln=True)
@@ -111,7 +113,7 @@ def cadastrar():
 
         # Adicionar a foto do consultor no rodapé esquerdo
         if foto_path and os.path.exists(foto_path):
-            pdf.image(foto_path, x=10, y=240, w=40)
+            pdf.image(foto_path, x=10, y=230, w=40)  # Posiciona a foto mais para baixo
 
         # Salvar PDF da primeira página
         pdf_cadastro_path = os.path.join(app.config['PDF_FOLDER'], "proposta_cadastro.pdf")
