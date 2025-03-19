@@ -31,12 +31,8 @@ def cadastrar():
         telefone_cliente = request.form.get("telefone_cliente", "").strip()
         email_cliente = request.form.get("email_cliente", "").strip()
         descricao = request.form.get("descricao", "").strip()
-        valor = request.form.get("valor", "").strip()
-        taxa = request.form.get("taxa", "").strip()
-
-        # Remover "R$" e "%" caso já estejam na entrada do usuário
-        valor_corrigido = valor.replace("R$", "").strip()
-        taxa_corrigida = taxa.replace("%", "").strip()
+        valor = request.form.get("valor", "").strip().replace("R$ ", "")
+        taxa = request.form.get("taxa", "").strip().replace("%", "")
 
         # Verificar se a imagem foi enviada
         if 'foto_consultor' not in request.files:
@@ -50,27 +46,27 @@ def cadastrar():
         foto_path = os.path.join(app.config['UPLOAD_FOLDER'], foto.filename)
         foto.save(foto_path)
 
-        # Verificar se o arquivo de imagem é válido
+        # Verificar se a imagem é válida
         try:
             img = Image.open(foto_path)
-            img.verify()  # Verifica se a imagem é válida
+            img.verify()
         except Exception:
-            os.remove(foto_path)  # Remove a imagem corrompida
+            os.remove(foto_path)
             return "❌ Erro: O arquivo enviado não é uma imagem válida.", 400
 
-        # Criar a primeira página do PDF
+        # Criar o PDF
         pdf = FPDF()
         pdf.set_auto_page_break(auto=True, margin=15)
         pdf.add_page()
 
-        # Adicionar a logo
+        # Adicionar a logo no cabeçalho
         logo_path = "static/logo.png"
         if os.path.exists(logo_path):
-            pdf.image(logo_path, x=10, y=10, w=190)
+            pdf.image(logo_path, x=10, y=10, w=50)
 
-        # Título
-        pdf.set_font("Arial", "B", 16)
-        pdf.ln(50)
+        # Adicionar título
+        pdf.set_font("Arial", "B", 18)
+        pdf.ln(20)
         pdf.cell(200, 10, "Proposta Comercial de Conta Vinculada", ln=True, align='C')
 
         # Informações principais
@@ -81,12 +77,11 @@ def cadastrar():
         pdf.cell(200, 10, f"Cliente: {cliente}", ln=True)
         pdf.cell(200, 10, f"Telefone do Cliente: {telefone_cliente} | E-mail: {email_cliente}", ln=True)
         pdf.cell(200, 10, f"Descrição: {descricao}", ln=True)
-        pdf.cell(200, 10, f"Valor: R$ {valor_corrigido} | Taxa: {taxa_corrigida}%", ln=True)
+        pdf.cell(200, 10, f"Valor: R$ {valor} | Taxa: {taxa}%", ln=True)
 
-        # Adicionar a foto do consultor no rodapé
-        pdf.ln(20)
+        # Adicionar a foto do consultor no rodapé esquerdo
         if os.path.exists(foto_path):
-            pdf.image(foto_path, x=80, y=220, w=50)
+            pdf.image(foto_path, x=10, y=240, w=40)
 
         # Salvar PDF da primeira página
         pdf_cadastro_path = os.path.join(app.config['PDF_FOLDER'], "proposta_cadastro.pdf")
