@@ -12,6 +12,9 @@ PDF_FOLDER = 'pdfs'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['PDF_FOLDER'] = PDF_FOLDER
 
+# Caminho da foto padrão do consultor
+FOTO_PADRAO = os.path.join(app.config['UPLOAD_FOLDER'], "foto_padrao.jpg")
+
 # Criar diretórios se não existirem
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PDF_FOLDER, exist_ok=True)
@@ -34,39 +37,36 @@ def cadastrar():
         valor = request.form.get("valor", "").strip().replace("R$ ", "")
         taxa = request.form.get("taxa", "").strip().replace("%", "")
 
-        # Verificar se a imagem foi enviada
-        if 'foto_consultor' not in request.files:
-            return "❌ Erro: Nenhuma foto foi enviada.", 400
+        # Verificar se o vendedor enviou uma foto personalizada
+        foto = request.files.get("foto_consultor")
+        if foto and foto.filename != "":
+            foto_path = os.path.join(app.config['UPLOAD_FOLDER'], foto.filename)
+            foto.save(foto_path)
 
-        foto = request.files['foto_consultor']
-        if foto.filename == "":
-            return "❌ Erro: Nenhuma foto foi enviada.", 400
-
-        # Salvar a foto do consultor
-        foto_path = os.path.join(app.config['UPLOAD_FOLDER'], foto.filename)
-        foto.save(foto_path)
-
-        # Verificar se a imagem é válida
-        try:
-            img = Image.open(foto_path)
-            img.verify()
-        except Exception:
-            os.remove(foto_path)
-            return "❌ Erro: O arquivo enviado não é uma imagem válida.", 400
+            # Verificar se a imagem é válida
+            try:
+                img = Image.open(foto_path)
+                img.verify()
+            except Exception:
+                os.remove(foto_path)
+                return "❌ Erro: O arquivo enviado não é uma imagem válida.", 400
+        else:
+            # Se nenhuma foto foi enviada, usa a foto padrão
+            foto_path = FOTO_PADRAO if os.path.exists(FOTO_PADRAO) else None
 
         # Criar o PDF
         pdf = FPDF()
         pdf.set_auto_page_break(auto=True, margin=15)
         pdf.add_page()
 
-        # Adicionar a logo no cabeçalho
+        # Adicionar a logo maior e destacada no cabeçalho
         logo_path = "static/logo.png"
         if os.path.exists(logo_path):
-            pdf.image(logo_path, x=10, y=10, w=50)
+            pdf.image(logo_path, x=50, y=10, w=100)  # Ajustado para centralizar e aumentar o tamanho
 
-        # Adicionar título
+        # Adicionar título destacado
         pdf.set_font("Arial", "B", 18)
-        pdf.ln(20)
+        pdf.ln(35)  # Ajusta o espaçamento
         pdf.cell(200, 10, "Proposta Comercial de Conta Vinculada", ln=True, align='C')
 
         # Informações principais
@@ -80,7 +80,7 @@ def cadastrar():
         pdf.cell(200, 10, f"Valor: R$ {valor} | Taxa: {taxa}%", ln=True)
 
         # Adicionar a foto do consultor no rodapé esquerdo
-        if os.path.exists(foto_path):
+        if foto_path and os.path.exists(foto_path):
             pdf.image(foto_path, x=10, y=240, w=40)
 
         # Salvar PDF da primeira página
